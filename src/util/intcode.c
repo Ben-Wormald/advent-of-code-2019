@@ -3,8 +3,6 @@
 #include <string.h>
 #include "./intcode.h"
 
-#define IC_INPUT_MAX 1024
-
 #define OP_ADD 1
 #define OP_MULTIPLY 2
 #define OP_HALT 99
@@ -51,7 +49,7 @@ int ic_run(int should_print) {
     }
     else {
       printf("bad opcode %d at %d!", opcode, i_ptr);
-      return -1;
+      return 0;
     }
 
     if (should_print) {

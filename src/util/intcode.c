@@ -9,46 +9,48 @@
 #define OP_MULTIPLY 2
 #define OP_HALT 99
 
-char input[IC_INPUT_MAX];
-char *token;
+int memory[IC_INPUT_MAX];
+int i_ptr, i_count;
 
-int opcodes[IC_INPUT_MAX];
-int op_ptr, op_count, opcode;
+void ic_init(char *input_original) {
+  char input[IC_INPUT_MAX];
+  char *token;
 
-void ic_init(char *input) {
+  strcpy(input, input_original);
+
   token = strtok(input, ",");
-  op_ptr = 0;
+  i_ptr = 0;
 
   while (token != NULL) {
-    opcodes[op_ptr++] = atoi(token);
+    memory[i_ptr++] = atoi(token);
     token = strtok(NULL, ",");
   }
 
-  op_count = op_ptr;
-  op_ptr = 0;
+  i_count = i_ptr;
+  i_ptr = 0;
 }
 
 int ic_run(int should_print) {
-  int op_1, op_2, op_3;
+  int opcode, operand_1, operand_2, operand_3;
 
 
   if (should_print) {
     ic_print();
   }
 
-  while ((opcode = opcodes[op_ptr]) != OP_HALT) {
-    op_1 = opcodes[op_ptr + 1];
-    op_2 = opcodes[op_ptr + 2];
-    op_3 = opcodes[op_ptr + 3];
+  while ((opcode = memory[i_ptr]) != OP_HALT) {
+    operand_1 = memory[i_ptr + 1];
+    operand_2 = memory[i_ptr + 2];
+    operand_3 = memory[i_ptr + 3];
 
     if (opcode == OP_ADD) {
-      opcodes[op_3] = opcodes[op_1] + opcodes[op_2];
+      memory[operand_3] = memory[operand_1] + memory[operand_2];
     }
     else if (opcode == OP_MULTIPLY) {
-      opcodes[op_3] = opcodes[op_1] * opcodes[op_2];
+      memory[operand_3] = memory[operand_1] * memory[operand_2];
     }
     else {
-      printf("bad opcode %d at %d!", opcode, op_ptr);
+      printf("bad opcode %d at %d!", opcode, i_ptr);
       return -1;
     }
 
@@ -56,21 +58,21 @@ int ic_run(int should_print) {
       ic_print();
     }
 
-    op_ptr += 4;
+    i_ptr += 4;
   }
 
-  return opcodes[0];
+  return memory[0];
 }
 
 void ic_fix(int noun, int verb) {
-  opcodes[1] = noun;
-  opcodes[2] = verb;
+  memory[1] = noun;
+  memory[2] = verb;
 }
 
 void ic_print() {
   int i;
-  for (i = 0; i < op_count; i++) {
-    printf("%4d ", opcodes[i]);
+  for (i = 0; i < i_count; i++) {
+    printf("%4d ", memory[i]);
   }
   printf("\n");
 }
